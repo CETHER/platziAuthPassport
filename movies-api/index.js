@@ -3,6 +3,7 @@ const app = express();
 
 const { config } = require('./config/index');
 const moviesApi = require('./routes/movies.js');
+const userMoviesApi = require('./routes/userMovies');
 
 const {
   logErrors,
@@ -17,6 +18,7 @@ app.use(express.json());
 
 // routes
 moviesApi(app);
+userMoviesApi(app);
 
 // Catch 404
 app.use(notFoundHandler);
@@ -27,5 +29,6 @@ app.use(wrapErrors);
 app.use(errorHandler);
 
 app.listen(config.port, function() {
+  // eslint-disable-next-line no-console
   console.log(`Listening http://localhost:${config.port}`);
 });

@@ -4,12 +4,18 @@ const { config } = require('../config');
 const USER = encodeURIComponent(config.dbUser);
 const PASSWORD = encodeURIComponent(config.dbPassword);
 const DB_NAME = config.dbName;
+// eslint-disable-next-line no-unused-vars
+const DB_HOST = config.dbHost;
 
-const MONGO_URI = `mongodb+srv://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${DB_NAME}?retryWrites=true&w=majority`;
-
+const MONGO_URI = `mongodb+srv://${USER}:${PASSWORD}@${config.dbHost}/${DB_NAME}?retryWrites=true&w=majority`;
+//const MONGO_URI = `mongodb://localhost:27017?readPreference=primary&appname=MongoDB%20Compass&ssl=false`;
+//console.log(MONGO_URI);
 class MongoLib {
   constructor() {
-    this.client = new MongoClient(MONGO_URI, { useNewUrlParser: true });
+    this.client = new MongoClient(MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
     this.dbName = DB_NAME;
   }
 
@@ -18,11 +24,13 @@ class MongoLib {
       MongoLib.connection = new Promise((resolve, reject) => {
         this.client.connect(err => {
           if (err) {
-            reject(err);
+            console.log(err);
+            return reject(err);
           }
 
           console.log('Connected succesfully to mongo');
-          resolve(this.client.db(this.dbName));
+          this.db = this.client.db(this.dbName);
+          return resolve();
         });
       });
     }

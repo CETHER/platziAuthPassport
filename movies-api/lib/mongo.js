@@ -8,7 +8,7 @@ const DB_NAME = config.dbName;
 const DB_HOST = config.dbHost;
 
 const MONGO_URI = `mongodb+srv://${USER}:${PASSWORD}@${config.dbHost}/${DB_NAME}?retryWrites=true&w=majority`;
-//const MONGO_URI = `mongodb://localhost:27017?readPreference=primary&appname=MongoDB%20Compass&ssl=false`;
+//const MONGO_URI = `mongodb://localhost:27017`;
 //console.log(MONGO_URI);
 class MongoLib {
   constructor() {
@@ -29,8 +29,7 @@ class MongoLib {
           }
 
           console.log('Connected succesfully to mongo');
-          this.db = this.client.db(this.dbName);
-          return resolve();
+          return resolve(this.client.db(this.dbName));
         });
       });
     }

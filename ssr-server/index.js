@@ -6,6 +6,10 @@ const axios = require("axios");
 
 const { config } = require("./config");
 
+//Variables de tiempo en segundos
+const THIRTY_DAYS_IN_MILSEC = 2592000000;
+const TWO_HOURS_IN_MILSEC = 7200000;
+
 const app = express();
 
 // body parser
@@ -16,6 +20,9 @@ app.use(cookieParser());
 require("./utils/auth/strategies/basic");
 
 app.post("/auth/sign-in", async function (req, res, next) {
+  //Obtenemos el atributo rememberMe desde el cuerpo del request
+  const { rememberMe } = req.body;
+
   passport.authenticate("basic", function (error, data) {
     try {
       if (error || !data) {
@@ -27,9 +34,13 @@ app.post("/auth/sign-in", async function (req, res, next) {
           next(error);
         }
         const { token, ...user } = data;
+
+        // Si el atributo rememberMe es verdadero la expiración será en 30 dias
+        // de lo contrario la expiración será en 2 horas
         res.cookie("token", token, {
           httpOnly: !config.dev,
           secure: !config.dev,
+          maxAge: rememberMe ? THIRTY_DAYS_IN_MILSEC : TWO_HOURS_IN_MILSEC,
         });
 
         res.status(200).json(user);
